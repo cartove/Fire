@@ -59,10 +59,12 @@ std::vector<LightSource*> lights;
 std::vector<FilledCube *> walls;
 //----------------------------------------------------------------------------
 sf::Music jump_sound;
+sf::Music hewon;
 pair<sf::Music,sf::Music> music;
 //----------------------------------------------------
 void build_model(){
     jump_sound.OpenFromFile("jump.ogg");
+    hewon.OpenFromFile("castleend.ogg");
     //LIGHTS
     lights.push_back(new LightSource(
                          vec4(400, 300, 400, 1.0),
@@ -125,7 +127,6 @@ void setup_view() {
         at.y=20;
     }
 
-    //std::cout << "looking from" << eye << std::endl;
     vec4 up( 0.0, 1.0, 0.0, 0.0 );
     mat4 mv= LookAt((eye), (at) ,(up));
     mat4 mp =Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar*3);
@@ -245,7 +246,14 @@ void keyboard( unsigned char key, int x, int y )
     switch( key ) {
     case 033: // Escape Key
     case 'q': case 'Q':
-        exit( EXIT_SUCCESS );
+        hewon.Play();
+        while(hewon.GetStatus()==hewon.Playing){
+            music.first.Stop();
+            music.second.Stop();
+            jump_sound.Stop();
+        }
+        exit(EXIT_SUCCESS);
+
         break;
     case 'w':case 'W':
         eye.z-=cos(theta)*3; eye.x+=sin(theta)*3;
@@ -318,8 +326,15 @@ void cleanup() {
 }
 //----------------------------------------------------------------------------
 void idle(){
-    if(eye.x>0&&eye.z>500&&eye.x<100&&eye.z<510)
+    if(eye.x>0&&eye.z>500&&eye.x<100&&eye.z<510){
+        hewon.Play();
+        while(hewon.GetStatus()==hewon.Playing){
+            music.first.Stop();
+            music.second.Stop();
+            jump_sound.Stop();
+        }
         exit( EXIT_SUCCESS );
+    }
     setup_view();
     glutPostRedisplay();
 }
