@@ -1,0 +1,145 @@
+# depslib dependency file v1.0
+1368122042 source:c:\users\mostafa\desktop\shading\cube.cpp
+	"cube.h"
+
+1368122042 c:\users\mostafa\desktop\shading\cube.h
+	"drawable.h"
+	<vector>
+
+1368141926 c:\users\mostafa\desktop\shading\drawable.h
+	"include/Angel.h"
+	"material.h"
+	"light_source.h"
+	<vector>
+
+1368122042 c:\users\mostafa\desktop\shading\include\angel.h
+	<cmath>
+	<iostream>
+	<stdio.h>
+	<OpenGL/OpenGL.h>
+	<GLUT/glut.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<GL/freeglut_ext.h>
+	"vec.h"
+	"mat.h"
+	"CheckError.h"
+
+1368122042 c:\users\mostafa\desktop\shading\include\vec.h
+	"Angel.h"
+
+1368122042 c:\users\mostafa\desktop\shading\include\mat.h
+	"vec.h"
+
+1368122042 c:\users\mostafa\desktop\shading\include\checkerror.h
+	<stdio.h>
+	<GL/gl.h>
+
+1368122042 c:\users\mostafa\desktop\shading\material.h
+	"include/Angel.h"
+
+1368122042 c:\users\mostafa\desktop\shading\light_source.h
+	"include/Angel.h"
+
+1368141920 source:c:\users\mostafa\desktop\shading\drawable.cpp
+	"drawable.h"
+
+1370532863 source:c:\users\mostafa\desktop\shading\lab7.cpp
+	"include/Angel.h"
+	<cmath>
+	<vector>
+	"drawable.h"
+	"cube.h"
+	"sphere.h"
+	"material.h"
+	"light_source.h"
+
+1368122042 c:\users\mostafa\desktop\shading\sphere.h
+	"drawable.h"
+
+1368122042 source:c:\users\mostafa\desktop\shading\light_source.cpp
+	"light_source.h"
+
+1368124324 source:c:\users\mostafa\desktop\shading\material.cpp
+	"material.h"
+
+1368122042 source:c:\users\mostafa\desktop\shading\sphere.cpp
+	"sphere.h"
+
+1368122042 source:c:\users\mostafa\desktop\shading\initshader.cpp
+	"include/Angel.h"
+
+1368122042 source:c:\users\mostafa\desktop\shading-negm\initshader.cpp
+	"include/Angel.h"
+
+1370603246 c:\users\mostafa\desktop\shading-negm\include\angel.h
+	<cmath>
+	<iostream>
+	<stdio.h>
+	<OpenGL/OpenGL.h>
+	<GLUT/glut.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<GL/freeglut_ext.h>
+	"vec.h"
+	"mat.h"
+	"CheckError.h"
+
+1370592826 c:\users\mostafa\desktop\shading-negm\include\vec.h
+	"Angel.h"
+
+1370592818 c:\users\mostafa\desktop\shading-negm\include\mat.h
+	"vec.h"
+
+1370590068 c:\users\mostafa\desktop\shading-negm\include\checkerror.h
+
+1370593052 source:c:\users\mostafa\desktop\shading-negm\cube.cpp
+	"cube.h"
+
+1370593000 c:\users\mostafa\desktop\shading-negm\cube.h
+	"drawable.h"
+	<vector>
+
+1370594052 c:\users\mostafa\desktop\shading-negm\drawable.h
+	"material.h"
+	"include/Angel.h"
+	"light_source.h"
+	<vector>
+
+1370592916 c:\users\mostafa\desktop\shading-negm\material.h
+	"include/Angel.h"
+
+1370592966 c:\users\mostafa\desktop\shading-negm\light_source.h
+	"include/Angel.h"
+
+1370593726 source:c:\users\mostafa\desktop\shading-negm\drawable.cpp
+	"drawable.h"
+
+1370592978 source:c:\users\mostafa\desktop\shading-negm\light_source.cpp
+	"light_source.h"
+
+1370592942 source:c:\users\mostafa\desktop\shading-negm\material.cpp
+	"material.h"
+
+1370593084 source:c:\users\mostafa\desktop\shading-negm\sphere.cpp
+	"sphere.h"
+
+1370593072 c:\users\mostafa\desktop\shading-negm\sphere.h
+	"drawable.h"
+
+1370604695 source:c:\users\mostafa\desktop\shading-negm\lab7.cpp
+	"include/Angel.h"
+	<cmath>
+	<vector>
+	<fstream>
+	<sstream>
+	"drawable.h"
+	"cube.h"
+	"sphere.h"
+	"mesh.h"
+	"material.h"
+	"light_source.h"
+
+1370604588 c:\users\mostafa\desktop\shading-negm\mesh.h
+	"drawable.h"
+

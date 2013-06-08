@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="drawable.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="167" topLine="67" />
+	</File>
+	<File name="drawable.h" open="0" top="0" tabpos="0">
+		<Cursor position="251" topLine="27" />
+	</File>
+	<File name="include\Angel.h" open="0" top="0" tabpos="0">
+		<Cursor position="1249" topLine="39" />
+	</File>
+	<File name="lab7.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="2372" topLine="90" />
+	</File>
+	<File name="mesh.h" open="1" top="0" tabpos="2">
+		<Cursor position="1625" topLine="2" />
+	</File>
+</CodeBlocks_layout_file>
