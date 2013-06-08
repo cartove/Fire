@@ -1,6 +1,7 @@
 #version 130
 in vec4 vPosition;
 in vec3 vNormal;
+in vec2 vertexUV;
 
 //view matrices
 uniform mat4 model_view;
@@ -19,10 +20,20 @@ out vec3 N;
 out vec3 L;
 out vec3 E;
 
+// Output data ; will be interpolated for each fragment.
+out vec2 UV;
+
+
 void main()
 {
     gl_Position = projection * model_view * vPosition;
     N = normalize(vNormal.xyz);
     L = normalize(light_position.xyz - vPosition.xyz);
     E = normalize(eye_position - vPosition).xyz;
+    UV = vertexUV;
 }
+
+
+
+
+

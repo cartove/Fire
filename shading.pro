@@ -1,6 +1,6 @@
 TEMPLATE = app
 QMAKE_CXXFLAGS= -std=c++11
-LIBS += -lGLU -lGL -lGLEW -lglut
+LIBS += -lGLU -lGL -lGLEW -lglut -lm
 
 SOURCES += \
     cube.cpp \
@@ -9,7 +9,9 @@ SOURCES += \
     sphere.cpp \
     material.cpp \
     drawable.cpp \
-    main.cpp
+    main.cpp \
+    particle.cpp \
+    objloader.cpp
 
 OTHER_FILES += \
     Makefile \
@@ -26,4 +28,6 @@ HEADERS += \
     include/CheckError.h \
     include/mat.h \
     include/vec.h \
-    mesh.h
+    mesh.h \
+    particle.h \
+    objloader.h

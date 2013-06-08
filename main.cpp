@@ -61,7 +61,7 @@ void build_model(){
 
     //LIGHTS
     lights.push_back(new LightSource(
-                    vec4(100, 100, 100, 1.0),
+                    vec4(400, 300, 400, 1.0),
 //                    vec4(0, 100, 0, 1.0),
                     color4(0.5, 0.5, 0.5, 1.0),
                     color4(1.0, 1.0, 1.0, 1.0),
@@ -93,7 +93,6 @@ void build_model(){
             color4(0,0,0,1.0),
             10000.2f
             );
-
 
     Sphere* s = new FilledSphere(vec4(0, 50, 0, 1), 25, 4);
     shapes.push_back(s);
@@ -187,7 +186,7 @@ void init( void )
 
     // enable depth test
     glEnable(GL_DEPTH_TEST);
-
+    glDepthFunc(GL_LESS);
     build_model();
     viewMode = PERSPECTIVE_WITH_FOV;
     reset_view();
