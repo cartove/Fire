@@ -10,6 +10,11 @@ using namespace std;
 #include "mesh.h"
 #include "material.h"
 #include "light_source.h"
+
+
+#include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
+
 const GLfloat WindowWidth = 1366;
 const GLfloat WindowHeight = 768;
 
@@ -34,7 +39,7 @@ GLfloat bottomDefault = -400, topDefault = 400;
 GLfloat zNearDefault = 1, zFarDefault = 600;
 float defaultTheta = 0, defaultPhi = 0;
 bool jumping=false;
-
+bool birdcrap=false;
 // current variables
 float theta = defaultTheta;
 float phi = defaultPhi;
@@ -51,10 +56,13 @@ vec4 eye;
 vec4 at;
 std::vector<Drawable*> shapes;
 std::vector<LightSource*> lights;
+std::vector<FilledCube *> walls;
 //----------------------------------------------------------------------------
-
+sf::Music jump_sound;
+pair<sf::Music,sf::Music> music;
+//----------------------------------------------------
 void build_model(){
-
+    jump_sound.OpenFromFile("jump.ogg");
     //LIGHTS
     lights.push_back(new LightSource(
                          vec4(400, 300, 400, 1.0),
@@ -69,11 +77,7 @@ void build_model(){
                          color4(1.0, 1.0, 1.0, 1.0),
                          color4(1.0, 1.0, 1.0, 1.0)
                          ));
-
-
-    //cube has a default material of red plastic
     FilledCube* cube1 = new FilledCube(vec4(0,-2,0,1),100000,.1,100000);
-    //change cube material to gold
     cube1->material = Material(
                 color4(0.24725,0.1995,0.0745,1.0),
                 color4(0.1,0.1,0.1,1.0),
@@ -81,29 +85,17 @@ void build_model(){
                 51.2f
                 );
     shapes.push_back(cube1);
-    FilledCube* cube2= new FilledCube(vec4(0,400,0,1),100000,1,100000);
-    shapes.push_back(cube2);
-    cube2->material = Material(
-                color4(0.8,0.8,.9,1.0),
-                color4(0.01,0.1,.5,1.0),
-                color4(0,0,0,1.0),
-                10000.2f
-                );
-    float l = 50.0;
-    FilledCube* cube = new FilledCube(vec4(0,0,0,1),l,l,l);
-    cube->material = Material(
-            color4(0.24725,0.1995,0.0745,1.0),
-            color4(0.75164,0.60648,0.22648,1.0),
-            color4(0.628281,0.55802,0.266065,1.0),
-            201.2f
-            );
-    shapes.push_back(cube);
+    fstream in("walls.txt");
+    int n;
+    in>>n;
+    for(int i=0;i<n;i++){
+        double cx,cz,w,d;
+        in>>cx>>cz>>w>>d;
+         FilledCube *temp=new FilledCube(vec4(cx,50,cz,1),w,100,d);
+        //TODO material
+        walls.push_back(temp);
+    }
 
-
-    Sphere* s = new FilledSphere(vec4(0, 50, 0, 1), 25, 4);
-    shapes.push_back(s);
-    //        Mesh * mm = new Mesh("suzanne.obj",vec4(0,0,0,1));
-    //    shapes.push_back(mm);
 }
 
 //-----------------------------------------------------------
@@ -112,21 +104,31 @@ void setup_view() {
     //eye and at are points
     static bool first=true;
     if(first){
-        eye.x = 0;
-        eye.y = 10;
-        eye.z = 400;
+        eye.x = 624;
+        eye.y = 40;
+        eye.z = 435;
         eye.w = 1.0;
-        at.x=0;
-        at.y=10;
-        at.z=0;
+        at.x=570;
+        at.y=40;
+        at.z=438;
         at.w=1;
         first=false;
+        theta=-0.5*M_PI;
+    }else if(!birdcrap){
+        eye.y = 40;
+        at.z=eye.z-200*cos(theta);
+        at.x=eye.x+200*sin(theta);
+    }else if(birdcrap){
+        eye.y=400;
+        at.x=eye.x-5;
+        at.z=eye.z-5;
+        at.y=20;
     }
 
     //std::cout << "looking from" << eye << std::endl;
     vec4 up( 0.0, 1.0, 0.0, 0.0 );
     mat4 mv= LookAt((eye), (at) ,(up));
-    mat4 mp =Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar);
+    mat4 mp =Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar*3);
 
     glUniformMatrix4fv(model_view_loc, 1, GL_TRUE, mv);
     glUniformMatrix4fv(projection_loc, 1, GL_TRUE, mp);
@@ -163,26 +165,43 @@ void init( void )
 
 
 void display( void ){
-
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    for (unsigned int i=0;i<shapes.size();i++){
-        //send data of shape[i] to shader
-        glUniform4fv(light_position_loc, 1, lights[0]->position);
-        glUniform4fv(eye_position_loc, 1, eye);
-        glUniform4fv(ambient_product_loc, 1, lights[0]->ambient * shapes[i]->material.ambientK);
-        glUniform4fv(diffuse_product_loc, 1, lights[0]->diffuse * shapes[i]->material.diffuseK);
-        glUniform4fv(specular_product_loc, 1, lights[0]->specular * shapes[i]->material.specularK);
-        glUniform1f(shininess_loc, shapes[i]->material.shininess);
-        shapes[i]->render();
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        for (unsigned int i=0;i<shapes.size();i++){
+            //send data of shape[i] to shader
+            glUniform4fv(light_position_loc, 1, lights[0]->position);
+            glUniform4fv(eye_position_loc, 1, eye);
+            glUniform4fv(ambient_product_loc, 1, lights[0]->ambient * shapes[i]->material.ambientK);
+            glUniform4fv(diffuse_product_loc, 1, lights[0]->diffuse * shapes[i]->material.diffuseK);
+            glUniform4fv(specular_product_loc, 1, lights[0]->specular * shapes[i]->material.specularK);
+            glUniform1f(shininess_loc, shapes[i]->material.shininess);
+            shapes[i]->render();
+        }
+        for (unsigned int i=0;i<walls.size();i++){
+            //send data of shape[i] to shader
+            glUniform4fv(light_position_loc, 1, lights[0]->position);
+            glUniform4fv(eye_position_loc, 1, eye);
+            glUniform4fv(ambient_product_loc, 1, lights[0]->ambient * walls[i]->material.ambientK);
+            glUniform4fv(diffuse_product_loc, 1, lights[0]->diffuse * walls[i]->material.diffuseK);
+            glUniform4fv(specular_product_loc, 1, lights[0]->specular * walls[i]->material.specularK);
+            glUniform1f(shininess_loc, walls[i]->material.shininess);
+            walls[i]->render();
+        }
+    if(birdcrap){
+            FilledSphere* s=new FilledSphere(vec4(eye.x-5,25,eye.z-5,1),20,3);
+            s->render();
+            delete s;
     }
-
     glutSwapBuffers();
 }
 
 //----------------------------------------------------------------------------
 
-
 void jump(int x){
+    static bool jumpwalalessa=true;
+    if(jumpwalalessa){
+    jump_sound.Play();
+    jumpwalalessa=false;
+    }
     static  int t=10;
     static bool up=true;
     if(up){
@@ -197,6 +216,7 @@ void jump(int x){
             up=true;
             t=10;
             jumping=false;
+            jumpwalalessa=true;
             return;
         }
     }
@@ -204,18 +224,24 @@ void jump(int x){
     glutPostRedisplay();
     glutTimerFunc( 30, jump, 0 );
 }
+
 void collide(double oldx,double oldz){
-    if(eye.x<=35&&eye.x>-35&&eye.z<=35&&eye.z>-35){
-        eye.x=oldx;
-        eye.z=oldz;
-    }
+	for(int i=0;i<walls.size();i++){
+        if(eye.x<=walls[i]->xmax+20&&eye.x>=walls[i]->xmin-10&&eye.z<=walls[i]->zmax+20&&eye.z>=walls[i]->zmin-10){
+			eye.x=oldx;
+			eye.z=oldz;
+			break;
+		}
+
+	}
 }
+
 
 void keyboard( unsigned char key, int x, int y )
 {
     double oldx=eye.x;
     double oldz=eye.z;
-
+    if(birdcrap) theta=0;
     switch( key ) {
     case 033: // Escape Key
     case 'q': case 'Q':
@@ -223,22 +249,18 @@ void keyboard( unsigned char key, int x, int y )
         break;
     case 'w':case 'W':
         eye.z-=cos(theta)*3; eye.x+=sin(theta)*3;
-        at.z=eye.z-200*cos(theta);
         collide(oldx,oldz);
         break;
     case 's': case'S':
         eye.z+=cos(theta)*3; eye.x-=sin(theta)*3;
-        at.z=eye.z-200*cos(theta);
         collide(oldx,oldz);
         break;
     case 'a':case'A':
         eye.z-=sin(theta)*3; eye.x-=cos(theta)*3;
-        at.z=eye.z-200*cos(theta);
         collide(oldx,oldz);
         break;
     case 'd':case'D':
         eye.z+=sin(theta)*3; eye.x+=cos(theta)*3;
-        at.z=eye.z-200*cos(theta);
         collide(oldx,oldz);
         break;
 
@@ -248,9 +270,19 @@ void keyboard( unsigned char key, int x, int y )
             jumping=true;
         }
         break;
+    case 'n':
+        std::cout << "looking from " << eye <<std::endl<<"at "<< at<<std::endl;
+        break;
+    case 'b':
+        birdcrap=!birdcrap;
+        if(birdcrap){
+            music.first.Pause();
+            music.second.Play();
+        }else{
+            music.second.Pause();
+            music.first.Play();
+        }
     }
-
-
 }
 
 void mouseMotion(int x,int y) {
@@ -259,7 +291,6 @@ void mouseMotion(int x,int y) {
     at.y-=delta_y/2.0;
     theta+=delta_x/50.0;
     if(theta>2*M_PI)theta-=2*M_PI;
-    std::cout<<theta<<std::endl;
     at.z=eye.z-200*cos(theta);
     at.x=eye.x+200*sin(theta);
     lastX = x;
@@ -272,6 +303,7 @@ void mouseMotion(int x,int y) {
         lastX=WindowWidth/2;
         glutWarpPointer(WindowWidth/2.0,y);
     }
+    if(birdcrap) theta=0;
 }
 
 //----------------------------------------------------------------------------
@@ -286,27 +318,31 @@ void cleanup() {
 }
 //----------------------------------------------------------------------------
 void idle(){
+    if(eye.x>0&&eye.z>500&&eye.x<100&&eye.z<510)
+        exit( EXIT_SUCCESS );
     setup_view();
     glutPostRedisplay();
 }
 int main( int argc, char **argv )
 {
+    music.first.OpenFromFile("overworld.ogg");
+    music.second.OpenFromFile("underwater.ogg");
+    music.first.SetLoop(true);
+    music.second.SetLoop(true);
+    music.first.Play();
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_RGBA  | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize( WindowWidth, WindowHeight);
     glutCreateWindow( "Project" );
-
     glewInit();
-
     init();
+
     glutSetCursor(GLUT_CURSOR_NONE);
     glutDisplayFunc( display );
     glutKeyboardFunc( keyboard );
     glutIdleFunc(idle);
     glutCloseFunc( cleanup );
     glutPassiveMotionFunc( mouseMotion );
-    glLineWidth(1);
-    //glEnable(GL_LINE_SMOOTH);
     glutWarpPointer(WindowWidth/2.0,WindowHeight/2.0);
     glutFullScreen();
     glutMainLoop();

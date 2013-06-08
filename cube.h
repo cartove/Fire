@@ -21,7 +21,7 @@ class FilledCube : public Drawable {
     public:
         //constructors
         FilledCube(vec4 center, float width ,float hight, float depth);
-
+        double xmin,xmax,zmin,zmax;
         virtual void render();
         virtual void calculateNormals();
 

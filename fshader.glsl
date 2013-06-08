@@ -17,6 +17,8 @@ uniform sampler2D myTextureSampler;
 
 out vec3 color;
 
+
+
 void main()
 {
     if(will_it_text == true){

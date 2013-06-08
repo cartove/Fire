@@ -92,6 +92,11 @@ FilledCube::FilledCube(vec4 center, float width, float height,float depth) {
         v[i].x += dx[i] * width/2;
         v[i].y += dy[i] * height/2;
         v[i].z += dz[i] * depth/2;
+        if(i==0){xmax=xmin=v[i].x;   zmax=zmin=v[i].z;}
+        else if(xmax<v[i].x) xmax=v[i].x;
+        else if(xmin>v[i].x) xmin=v[i].x;
+        else if(zmax<v[i].z) zmax=v[i].z;
+        else if(zmin>v[i].z) zmin=v[i].z;
     }
 
     //indices array
@@ -100,7 +105,7 @@ FilledCube::FilledCube(vec4 center, float width, float height,float depth) {
     // can have normal per vertex) indices array is just used to simplify
     // vertices creation
     // NOTE2: indices are arranged such that the cross product of any two lines
-    // in a triangle gives a normal to the triangle outwards 
+    // in a triangle gives a normal to the triangle outwards
     unsigned int indices[] = {
         //near plane
         0,1,2,0,2,3,

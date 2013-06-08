@@ -1,6 +1,6 @@
 TEMPLATE = app
 QMAKE_CXXFLAGS= -std=c++11
-LIBS += -lGLU -lGL -lGLEW -lglut -lm
+LIBS += -lGLU -lGL -lGLEW -lglut -lm -lsfml-system  -lsfml-audio
 
 SOURCES += \
     cube.cpp \
