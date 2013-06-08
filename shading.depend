@@ -143,3 +143,77 @@
 1370604588 c:\users\mostafa\desktop\shading-negm\mesh.h
 	"drawable.h"
 
+1370609758 source:c:\users\mostafa\desktop\fire-master\cube.cpp
+	"cube.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\cube.h
+	"drawable.h"
+	<vector>
+
+1370609758 c:\users\mostafa\desktop\fire-master\drawable.h
+	"material.h"
+	"include/Angel.h"
+	"light_source.h"
+	<vector>
+
+1370609758 c:\users\mostafa\desktop\fire-master\material.h
+	"include/Angel.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\include\angel.h
+	<cmath>
+	<iostream>
+	<stdio.h>
+	<OpenGL/OpenGL.h>
+	<GLUT/glut.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<GL/freeglut_ext.h>
+	"vec.h"
+	"mat.h"
+	"CheckError.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\include\vec.h
+	"Angel.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\include\mat.h
+	"vec.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\include\checkerror.h
+
+1370609758 c:\users\mostafa\desktop\fire-master\light_source.h
+	"include/Angel.h"
+
+1370609758 source:c:\users\mostafa\desktop\fire-master\drawable.cpp
+	"drawable.h"
+
+1370609758 source:c:\users\mostafa\desktop\fire-master\light_source.cpp
+	"light_source.h"
+
+1370609758 source:c:\users\mostafa\desktop\fire-master\material.cpp
+	"material.h"
+
+1370609758 source:c:\users\mostafa\desktop\fire-master\sphere.cpp
+	"sphere.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\sphere.h
+	"drawable.h"
+
+1370609758 source:c:\users\mostafa\desktop\fire-master\initshader.cpp
+	"include/Angel.h"
+
+1370645845 source:c:\users\mostafa\desktop\fire-master\lab7.cpp
+	"include/Angel.h"
+	<cmath>
+	<vector>
+	<fstream>
+	<sstream>
+	"drawable.h"
+	"cube.h"
+	"sphere.h"
+	"mesh.h"
+	"material.h"
+	"light_source.h"
+
+1370609758 c:\users\mostafa\desktop\fire-master\mesh.h
+	"drawable.h"
+

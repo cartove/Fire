@@ -80,14 +80,16 @@ void build_model(){
     FilledCube* cube = new FilledCube(vec4(0,0,0,1),l,l,l);
 
     //change cube material to gold
+
     cube->material = Material(
             color4(0.24725,0.1995,0.0745,1.0),
             color4(0.75164,0.60648,0.22648,1.0),
             color4(0.628281,0.55802,0.266065,1.0),
-            51.2f
+            201.2f
             );
     shapes.push_back(cube);
-
+    //FilledCube* fcube = new FilledCube(vec4(0,-25,0,1),500,1,500);
+    //shapes.push_back(fcube);
     Sphere* s = new FilledSphere(vec4(0, 50, 0, 1), 25, 4);
     shapes.push_back(s);
 //        Mesh * mm = new Mesh("suzanne.obj",vec4(0,0,0,1));
@@ -109,6 +111,10 @@ void setup_view() {
         at.z=0;
         at.w=1;
         first=false;
+    }else{
+        at.z=eye.z-200*cos(theta);
+        at.x=eye.x+200*sin(theta);
+
     }
 
     //std::cout << "looking from" << eye << std::endl;
@@ -122,7 +128,7 @@ void setup_view() {
     float zf = zoomFactor;
 
     if (viewMode == PERSPECTIVE_WITH_FOV)
-        mp = Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar);
+       mp = Perspective(90, WindowWidth/WindowHeight, zNear, zFar);
     else if (viewMode == PERSPECTIVE_WITH_FRUSTUM)
         mp = Frustum(lefty/zf, righty/zf, bottom/zf, top/zf, zNear, zFar);
     else
@@ -186,7 +192,7 @@ void init( void )
     reset_view();
     setup_view();
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.45, 0.45, 0.45, 1.0);
+    glClearColor(0.0, 0.88, 1, 1.0);
 }
 
 //-----------------------------------------------------------
@@ -234,10 +240,17 @@ void jump(int x){
     glutPostRedisplay();
     glutTimerFunc( 30, jump, 0 );
 }
+void collide(double oldx,double oldz){
+    if(eye.x<=35&&eye.x>-35&&eye.z<=35&&eye.z>-35){
+        eye.x=oldx;
+        eye.z=oldz;
+    }
+}
 void keyboard( unsigned char key, int x, int y )
 {
     float deltaAng = 10/180.0 * M_PI;
-
+    double oldx=eye.x;
+    double oldz=eye.z;
     switch( key ) {
         case 033: // Escape Key
         case 'q': case 'Q':
@@ -245,23 +258,19 @@ void keyboard( unsigned char key, int x, int y )
             break;
              case 'w':case 'W':
             eye.z-=cos(theta)*3; eye.x+=sin(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
+            collide(oldx,oldz);
             break;
         case 's': case'S':
             eye.z+=cos(theta)*3; eye.x-=sin(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
+            collide(oldx,oldz);
             break;
         case 'a':case'A':
             eye.z-=sin(theta)*3; eye.x-=cos(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
+            collide(oldx,oldz);
             break;
         case 'd':case'D':
             eye.z+=sin(theta)*3; eye.x+=cos(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
+            collide(oldx,oldz);
             break;
 
         case 32://SPACE BAR
@@ -270,6 +279,8 @@ void keyboard( unsigned char key, int x, int y )
                 jumping=true;
             }
             break;
+        case 'n':
+            std::cout << "looking from " << eye <<std::endl<<"at "<< at<<std::endl;
        /*
         case 'x': left *= 1.1; right *= 1.1; break;
         case 'X': left *= 0.9; right *= 0.9; break;
@@ -322,8 +333,10 @@ void mouseMotion(int x,int y) {
     int delta_y = y-lastY;
     at.y-=delta_y/2.0;
     theta+=delta_x/50.0;
+   // if(theta>1.3)theta=1.3;
+   // if(theta<-1.3)theta=-1.3;
     if(theta>2*M_PI)theta-=2*M_PI;
-    std::cout<<theta<<std::endl;
+    //std::cout<<theta<<std::endl;
     at.z=eye.z-200*cos(theta);
     at.x=eye.x+200*sin(theta);
     //std::cout<<x<<"   "<<y<<std::endl;
