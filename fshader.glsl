@@ -8,11 +8,11 @@ in vec2 UV;
 uniform vec4 ambient_product;
 uniform vec4 diffuse_product;
 uniform vec4 specular_product;
-uniform bool will_it_text;
 uniform vec4 light_position;
 uniform vec4 eye_position;
 
 uniform float shininess;
+uniform bool will_it_text;
 uniform sampler2D myTextureSampler;
 
 out vec3 color;

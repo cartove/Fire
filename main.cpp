@@ -17,7 +17,7 @@ const GLfloat WindowHeight = 768;
 
 GLuint model_view_loc;
 GLuint projection_loc;
-
+GLboolean will_it_text=false;
 GLuint light_position_loc;
 GLuint eye_position_loc;
 GLuint ambient_product_loc;
@@ -40,10 +40,6 @@ float theta = defaultTheta;
 float phi = defaultPhi;
 int lastX=WindowWidth/2,lastY=WindowHeight/2;
 
-enum ViewingMode {
-    ORTHO, PERSPECTIVE_WITH_FRUSTUM, PERSPECTIVE_WITH_FOV
-} viewMode;
-
 // viewing volume
 GLfloat lefty = leftDefault, righty = rightDefault;
 GLfloat bottom = bottomDefault, top =  topDefault;
@@ -61,43 +57,53 @@ void build_model(){
 
     //LIGHTS
     lights.push_back(new LightSource(
-                    vec4(400, 300, 400, 1.0),
-//                    vec4(0, 100, 0, 1.0),
-                    color4(0.5, 0.5, 0.5, 1.0),
-                    color4(1.0, 1.0, 1.0, 1.0),
-                    color4(1.0, 1.0, 1.0, 1.0)
-                ));
+                         vec4(400, 300, 400, 1.0),
+                         //                    vec4(0, 100, 0, 1.0),
+                         color4(0.5, 0.5, 0.5, 1.0),
+                         color4(1.0, 1.0, 1.0, 1.0),
+                         color4(1.0, 1.0, 1.0, 1.0)
+                         ));
     lights.push_back(new LightSource(
-                    vec4(0, 0, 10, 1.0),
-                    color4(1.0, 0.5, 0.5, 1.0),
-                    color4(1.0, 1.0, 1.0, 1.0),
-                    color4(1.0, 1.0, 1.0, 1.0)
-                ));
+                         vec4(0, 0, 10, 1.0),
+                         color4(1.0, 0.5, 0.5, 1.0),
+                         color4(1.0, 1.0, 1.0, 1.0),
+                         color4(1.0, 1.0, 1.0, 1.0)
+                         ));
 
 
     //cube has a default material of red plastic
     FilledCube* cube1 = new FilledCube(vec4(0,-2,0,1),100000,.1,100000);
     //change cube material to gold
     cube1->material = Material(
-            color4(0.24725,0.1995,0.0745,1.0),
-            color4(0.75164,0.60648,0.22648,1.0),
-            color4(0.628281,0.55802,0.266065,1.0),
-            51.2f
-            );
+                color4(0.24725,0.1995,0.0745,1.0),
+                color4(0.1,0.1,0.1,1.0),
+                color4(0.1,0.1,0.266065,1.0),
+                51.2f
+                );
     shapes.push_back(cube1);
     FilledCube* cube2= new FilledCube(vec4(0,400,0,1),100000,1,100000);
     shapes.push_back(cube2);
     cube2->material = Material(
-            color4(0.8,0.8,.9,1.0),
-            color4(0.01,0.1,.5,1.0),
-            color4(0,0,0,1.0),
-            10000.2f
+                color4(0.8,0.8,.9,1.0),
+                color4(0.01,0.1,.5,1.0),
+                color4(0,0,0,1.0),
+                10000.2f
+                );
+    float l = 50.0;
+    FilledCube* cube = new FilledCube(vec4(0,0,0,1),l,l,l);
+    cube->material = Material(
+            color4(0.24725,0.1995,0.0745,1.0),
+            color4(0.75164,0.60648,0.22648,1.0),
+            color4(0.628281,0.55802,0.266065,1.0),
+            201.2f
             );
+    shapes.push_back(cube);
+
 
     Sphere* s = new FilledSphere(vec4(0, 50, 0, 1), 25, 4);
     shapes.push_back(s);
-//        Mesh * mm = new Mesh("suzanne.obj",vec4(0,0,0,1));
-//    shapes.push_back(mm);
+    //        Mesh * mm = new Mesh("suzanne.obj",vec4(0,0,0,1));
+    //    shapes.push_back(mm);
 }
 
 //-----------------------------------------------------------
@@ -119,51 +125,14 @@ void setup_view() {
 
     //std::cout << "looking from" << eye << std::endl;
     vec4 up( 0.0, 1.0, 0.0, 0.0 );
-
-    mat4 mv;
-    mat4 mp;
-
-    mv = LookAt((eye), (at) ,(up));
-
-    float zf = zoomFactor;
-
-    if (viewMode == PERSPECTIVE_WITH_FOV)
-        mp = Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar);
-    else if (viewMode == PERSPECTIVE_WITH_FRUSTUM)
-        mp = Frustum(lefty/zf, righty/zf, bottom/zf, top/zf, zNear, zFar);
-    else
-        mp = Ortho(lefty/zf, righty/zf, bottom/zf, top/zf, -zNear, -zFar);
+    mat4 mv= LookAt((eye), (at) ,(up));
+    mat4 mp =Perspective(fovy, WindowWidth/WindowHeight, zNear, zFar);
 
     glUniformMatrix4fv(model_view_loc, 1, GL_TRUE, mv);
     glUniformMatrix4fv(projection_loc, 1, GL_TRUE, mp);
-    /*
-    std::cout << "left : " << left << " , right : " << right << std::endl;
-    std::cout << "top : " << top << " , bottom : " << bottom << std::endl;
-    std::cout << "near : " << zNear << " , far : " << zFar << std::endl;
-    std::cout << "theta " << theta << std::endl;
-    std::cout << "phi " << phi << std::endl;
-    std::cout << "zoom Factor " << zoomFactor << std::endl;
-    std::cout << "--------------" << std::endl;
-    */
 }
 
-void reset_view() {
 
-
-    if (viewMode == ORTHO){
-
-        zoomFactor = 1;
-    }else if (viewMode == PERSPECTIVE_WITH_FRUSTUM) {
-        zoomFactor = 100;
-    } else {
-        fovy = 60;
-    }
-
-    lefty = leftDefault; righty = rightDefault;
-    bottom = bottomDefault; top =  topDefault;
-    zNear = zNearDefault; zFar = zFarDefault;
-
-}
 
 //-----------------------------------------------------------
 void init( void )
@@ -171,7 +140,6 @@ void init( void )
     // Load shaders and use the resulting shader program
     Drawable::shaderProgram = InitShader( "vshader.glsl", "fshader.glsl" );
     glUseProgram( Drawable::shaderProgram );
-
     //init locations
     model_view_loc = glGetUniformLocation( Drawable::shaderProgram, "model_view" );
     projection_loc = glGetUniformLocation( Drawable::shaderProgram, "projection" );
@@ -183,17 +151,13 @@ void init( void )
     diffuse_product_loc = glGetUniformLocation( Drawable::shaderProgram, "diffuse_product" );
     specular_product_loc = glGetUniformLocation( Drawable::shaderProgram, "specular_product" );
     shininess_loc = glGetUniformLocation( Drawable::shaderProgram, "shininess" );
-
+    will_it_text = glGetUniformLocation( Drawable::shaderProgram, "will_it_text" );
     // enable depth test
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
     build_model();
-    viewMode = PERSPECTIVE_WITH_FOV;
-    reset_view();
     setup_view();
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.45, 0.45, 0.45, 1.0);
-}
+    glClearColor(0.0, 0.88, 1, 1.0);}
 
 //-----------------------------------------------------------
 
@@ -240,84 +204,50 @@ void jump(int x){
     glutPostRedisplay();
     glutTimerFunc( 30, jump, 0 );
 }
+void collide(double oldx,double oldz){
+    if(eye.x<=35&&eye.x>-35&&eye.z<=35&&eye.z>-35){
+        eye.x=oldx;
+        eye.z=oldz;
+    }
+}
+
 void keyboard( unsigned char key, int x, int y )
 {
-    float deltaAng = 10/180.0 * M_PI;
+    double oldx=eye.x;
+    double oldz=eye.z;
 
     switch( key ) {
-        case 033: // Escape Key
-        case 'q': case 'Q':
-            exit( EXIT_SUCCESS );
-            break;
-             case 'w':case 'W':
-            eye.z-=cos(theta)*3; eye.x+=sin(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
-            break;
-        case 's': case'S':
-            eye.z+=cos(theta)*3; eye.x-=sin(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
-            break;
-        case 'a':case'A':
-            eye.z-=sin(theta)*3; eye.x-=cos(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
-            break;
-        case 'd':case'D':
-            eye.z+=sin(theta)*3; eye.x+=cos(theta)*3;
-            at.z=eye.z-200*cos(theta);
-            at.x=eye.x+200*sin(theta);
-            break;
+    case 033: // Escape Key
+    case 'q': case 'Q':
+        exit( EXIT_SUCCESS );
+        break;
+    case 'w':case 'W':
+        eye.z-=cos(theta)*3; eye.x+=sin(theta)*3;
+        at.z=eye.z-200*cos(theta);
+        collide(oldx,oldz);
+        break;
+    case 's': case'S':
+        eye.z+=cos(theta)*3; eye.x-=sin(theta)*3;
+        at.z=eye.z-200*cos(theta);
+        collide(oldx,oldz);
+        break;
+    case 'a':case'A':
+        eye.z-=sin(theta)*3; eye.x-=cos(theta)*3;
+        at.z=eye.z-200*cos(theta);
+        collide(oldx,oldz);
+        break;
+    case 'd':case'D':
+        eye.z+=sin(theta)*3; eye.x+=cos(theta)*3;
+        at.z=eye.z-200*cos(theta);
+        collide(oldx,oldz);
+        break;
 
-        case 32://SPACE BAR
-            if(!jumping){
-                glutTimerFunc( 1, jump, 0 );
-                jumping=true;
-            }
-            break;
-       /*
-        case 'x': left *= 1.1; right *= 1.1; break;
-        case 'X': left *= 0.9; right *= 0.9; break;
-        case 'y': bottom *= 1.1; top *= 1.1; break;
-        case 'Y': bottom *= 0.9; top *= 0.9; break;
-        case 'z': zNear  *= 1.1; zFar *= 1.1; break;
-        case 'Z': zNear *= 0.9; zFar *= 0.9; break;
-        case 'r': radius *= 1.1; break;
-        case 'R': radius *= 0.9; break;
-
-        case 'a': theta += deltaAng; break;
-        case 'd': theta -= deltaAng; break;
-        case 'w': phi += deltaAng; break;
-        case 's': phi -= deltaAng; break;
-
-        case 'p':
-                  viewMode = PERSPECTIVE_WITH_FRUSTUM;
-                  reset_view();
-                  break;
-        case 'P':
-                  viewMode = PERSPECTIVE_WITH_FOV;
-                  reset_view();
-                  break;
-        case 'o':
-                  viewMode = ORTHO;
-                  reset_view();
-                  break;
-        case 'f':
-                  fovy+=5;
-                  break;
-        case 'F':
-                  fovy-=5;
-                  break;
-        case 'v':
-                  zoomFactor*=1.1;
-                  break;
-        case 'V':
-                  zoomFactor*= 0.9;
-                  break;
-        case ' ':  // reset values to their defaults
-                  reset_view();
-                  */
+    case 32://SPACE BAR
+        if(!jumping){
+            glutTimerFunc( 1, jump, 0 );
+            jumping=true;
+        }
+        break;
     }
 
 
@@ -332,16 +262,15 @@ void mouseMotion(int x,int y) {
     std::cout<<theta<<std::endl;
     at.z=eye.z-200*cos(theta);
     at.x=eye.x+200*sin(theta);
-    //std::cout<<x<<"   "<<y<<std::endl;
     lastX = x;
     lastY = y;
     if(x<=0){
-     lastX=WindowWidth/2;
-     glutWarpPointer(WindowWidth/2.0,y);
+        lastX=WindowWidth/2;
+        glutWarpPointer(WindowWidth/2.0,y);
     }
     if(x>=WindowWidth-1){
-     lastX=WindowWidth/2;
-     glutWarpPointer(WindowWidth/2.0,y);
+        lastX=WindowWidth/2;
+        glutWarpPointer(WindowWidth/2.0,y);
     }
 }
 
@@ -365,8 +294,7 @@ int main( int argc, char **argv )
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_RGBA  | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize( WindowWidth, WindowHeight);
-    viewMode = PERSPECTIVE_WITH_FOV;
-    glutCreateWindow( "lab7: Shading" );
+    glutCreateWindow( "Project" );
 
     glewInit();
 
