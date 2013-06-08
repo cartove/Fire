@@ -9,7 +9,7 @@ SOURCES += \
     sphere.cpp \
     material.cpp \
     drawable.cpp \
-    lab7.cpp
+    main.cpp
 
 OTHER_FILES += \
     Makefile \

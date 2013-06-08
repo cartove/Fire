@@ -15,17 +15,13 @@ uniform float shininess;
 
 void main()
 {
-    // we need to normalize again
-    // (as N is the interpolated value of 3 normals)
+    // we need to normalize again (as N is the interpolated value of 3 normals)
     vec3 NN = normalize(N);
     vec3 EE = normalize(E);
     vec3 LL = normalize(L);
 
     vec4 ambient, diffuse, specular;
     ambient = ambient_product;
-
-    //TODO: Task 5
-    // Calculate the values marked with ???
 
     //diffuse calculation
     float Kd = max(dot(LL, NN), 0.0);;
